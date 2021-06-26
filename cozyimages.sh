@@ -127,7 +127,7 @@ for TPE in $IMTYPE; do
 		if [[ $res == '2560x1440' ]]; then
 		    echo "converting 2560x1440 resolution..."
 		    #${CNVSTR1} \( $img -crop '331x377+1685+335' ${CNVSTR2} \) ${DSTIMGS}/${img}
-		    convert $img -crop '366x362+1670+342' ${DSTIMGS}/XX${img}
+		    convert $img -crop '366x362+1668+341' ${DSTIMGS}/XX${img}
 		    convert -extent 375x375 -gravity Center -background "#f5f0d6" -scale '200x200' ${DSTIMGS}/XX${img} ${DSTIMGS}/${img}
 		    rm ${DSTIMGS}/XX${img}
 		    CNVTD='true'
