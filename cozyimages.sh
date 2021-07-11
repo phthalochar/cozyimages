@@ -94,15 +94,18 @@ CNVSTR2='-scale 200x200'
 array_contains () {
     local array="$1[@]"
     local seeking=$2
+	echo "checking $array for $seeking"
     local in=1
     for element in "${!array}"; do
-	if [[ $element == "$seeking" ]]; then
-	    in=0
-	    break
-	fi
+		if [[ $element == "$seeking" ]]; then
+			in=0
+			echo "found"
+			return $in
+		fi
     done
+	echo "not found"
     return $in
-    }
+}
 
 for TPE in $IMTYPE; do
     if [[ "foo" == "foo" ]]; then # FIXME - test if there are any images of this type
@@ -110,12 +113,15 @@ for TPE in $IMTYPE; do
 	    CNVTD='false'
 	    nn1=`echo $img | sed "s/\.${TPE}/-KIT.${TPE}/"`
 	    nn2=`echo $img | sed "s/\.${TPE}/-VAL.${TPE}/"`
+	    nn3=`echo $img | sed "s/\.${TPE}/-JER.${TPE}/"`
 	    echo "processing $img"
 	    if [[ -f "${DSTIMGS}/${img}" || \
 		      -f "${DSTIMGS}/${nn1}" || \
-		      -f "${DSTIMGS}/${nn2}" ]]; then
+		      -f "${DSTIMGS}/${nn2}" || \
+		      -f "${DSTIMGS}/${nn3}" ]]; then
 		goodfiles=$(($goodfiles + 1))
 		echo "file ${img} exists in ${DSTIMGS} -- skipping"
+		break
 	    else
 		info=`identify $img`
 		#echo "image info: ${info}"
@@ -127,8 +133,8 @@ for TPE in $IMTYPE; do
 		if [[ $res == '2560x1440' ]]; then
 		    echo "converting 2560x1440 resolution..."
 		    #${CNVSTR1} \( $img -crop '331x377+1685+335' ${CNVSTR2} \) ${DSTIMGS}/${img}
-		    convert $img -crop '365x362+1670+341' ${DSTIMGS}/XX${img}
-		    convert -extent 375x375 -gravity Center -background "#f5f0d6" -scale '200x200' ${DSTIMGS}/XX${img} ${DSTIMGS}/${img}
+		    convert $img -crop '365x362+1670+341' -scale '195x195' ${DSTIMGS}/XX${img}
+		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${img} ${DSTIMGS}/${img}
 		    rm ${DSTIMGS}/XX${img}
 		    CNVTD='true'
 		    NWIMGS="$img"
@@ -147,16 +153,20 @@ for TPE in $IMTYPE; do
 		if [[ $res == '1280x720' ]]; then
 		    echo "converting 1280x720 resolution..."
 		    echo "Doing multiple conversion to reflect UI differences"
-		    convert $img -crop '200x200+839+147' -scale '200x200' ${DSTIMGS}/XX${nn1}
-		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn1} ${DSTIMGS}/${nn1}
+		    convert $img -crop '195x195+840+150' ${DSTIMGS}/XX${nn1}
+		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn1} ${DSTIMGS}/${nn1}
 		    rm ${DSTIMGS}/XX${nn1}
 
-		    convert $img -crop '200x200+905+147' -scale '200x200' ${DSTIMGS}/XX${nn2}
-		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
+		    convert $img -crop '195x195+900+150' ${DSTIMGS}/XX${nn2}
+		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
 		    rm ${DSTIMGS}/XX${nn2}
+			
+		    convert $img -crop '195x195+899+123' ${DSTIMGS}/XX${nn3}
+		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn3} ${DSTIMGS}/${nn3}
+		    rm ${DSTIMGS}/XX${nn3}
 		    
 		    CNVTD='true'
-		    NWIMGS="$nn1 $nn2"
+		    NWIMGS="$nn1 $nn2 $nn3"
 		    echo "done"
 		fi
 		if [[ $res == '2224x1668' ]]; then
@@ -182,12 +192,12 @@ for TPE in $IMTYPE; do
 		if [[ $res == '1920x1080' ]]; then
 		    echo "converting 1920x1080 resolution..."
 		    echo "Doing multiple conversion to reflect UI differences"
-		    convert $img -crop '263x283+1244+251' -scale '200x200' ${DSTIMGS}/XX${nn1}
-		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn1} ${DSTIMGS}/${nn1}
+		    convert $img -crop '271x271+1323+257' -scale '195x195' ${DSTIMGS}/XX${nn1} 
+		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn1} ${DSTIMGS}/${nn1}
 		    rm ${DSTIMGS}/XX${nn1}
 
-		    convert $img -crop '278x261+1320+262' -scale '200x200' ${DSTIMGS}/XX${nn2}
-		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
+		    convert $img -crop '271x271+1239+257' -scale '195x195' ${DSTIMGS}/XX${nn2}
+		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
 		    rm ${DSTIMGS}/XX${nn2}
 
 		    CNVTD='true'
@@ -222,11 +232,11 @@ for TPE in $IMTYPE; do
 		if [[ $res == '1085x610' ]]; then
 		    echo "converting 1085x610 resolution..."			
 		    echo "Doing multiple conversion to reflect UI differences"
-		    convert $img -crop '172x172+759+123' -scale '195x195' ${DSTIMGS}/XX${nn1}
+		    convert $img -crop '170x170+760+125' -scale '195x195' ${DSTIMGS}/XX${nn1}
 		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn1} ${DSTIMGS}/${nn1}
 		    rm ${DSTIMGS}/XX${nn1}
 
-		    convert $img -crop '172x172+709+123' -scale '195x195' ${DSTIMGS}/XX${nn2}
+		    convert $img -crop '170x170+710+125' -scale '195x195' ${DSTIMGS}/XX${nn2}
 		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
 		    rm ${DSTIMGS}/XX${nn2}
 
@@ -236,7 +246,7 @@ for TPE in $IMTYPE; do
 		fi
 		if [[ $res == '873x609' ]]; then
 		    echo "converting 873x609 resolution..."
-		    convert $img -crop '155x155+647+135' -scale '200x200' ${DSTIMGS}/XX${img}
+		    convert $img -crop '155x155+650+135' -scale '200x200' ${DSTIMGS}/XX${img}
 		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${img} ${DSTIMGS}/${img}
 		    rm ${DSTIMGS}/XX${img}
 		    CNVTD='true'
@@ -244,29 +254,33 @@ for TPE in $IMTYPE; do
 		    echo "done"
 		fi
 		if [[ $CNVTD == 'true' ]]; then
-		    goodfiles=$(($goodfiles + 1))
+		    goodfiles=$(($goodfiles + 1)) #add 1 to goodfiles count
 		    echo "total good files seen: $goodfiles"
+			#add link to good file into newimg folder
 		    if [[ -d ${NEWIMGS} ]]; then 
-			for i in $NWIMGS; do
-				ln -s ${DSTIMGS}/$i ${NEWIMGS}/$i
-			done
+				for i in $NWIMGS; do
+					ln -s ${DSTIMGS}/$i ${NEWIMGS}/$i
+				done
 		    fi
+			#add resolution to goodres if new
 		    if array_contains goodres $res; then
-			echo "seen $res before"
+				echo "seen $res before"
 		    else
-			echo "first time seeing $res"
-			goodres+=("$res")
+				echo "first time seeing $res"
+				goodres+=("$res")
 		    fi
 		else
 		    echo "=========> unable to convert $img with resolution $res"
-		    badfiles=$(($badfiles + 1))
+		    badfiles=$(($badfiles + 1)) #add 1 to badfiles count
 		    echo "total bad files seen: $badfiles"
+			#rename file to NOTDONE-*
 		    touch ${DSTIMGS}/NOTDONE-${img}
+			#add resolution to badres if new
  		    if array_contains badres $res; then
-			echo "seen $res before"
+				echo "seen $res before"
 		    else
-			echo "first time seeing $res"
-			badres+=("$res")
+				echo "first time seeing $res"
+				badres+=("$res")
 		    fi
 		fi
 	    fi
@@ -292,4 +306,14 @@ for i in ${badres[@]}; do
     echo "total files seen for $i: ${rezzes[$rvar]}"
 done
 
+unset rezzes
+unset res
+unset rvar
+
 echo "$0 script run done"
+
+#after stuff
+
+#move list of items to folder
+#ls ../converted-images/good/ | xargs mv -t good
+
