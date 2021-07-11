@@ -6,10 +6,19 @@
 # shell script to process images to create standaridzed cropped and
 # sized icons for the Cozy Grove game documentation wiki
 
+
 HME=$PWD
 SRCIMGS=${1:-$HME/source-images}
 DSTIMGS=${2:-$HME/converted-images}
 NEWIMGS=${3:-$HME/new-images}
+
+
+log=logfile.txt
+printf "Log File - " > $log
+date >> $log
+exec > >(tee -a $log)
+exec 2>&1
+echo "Log Location should be: [ $HME/logfile.txt ]"
 
 if [[ $1 == '-h' || $1 == '--help' || $1 == 'help' ]]; then
     cat <<EOF
