@@ -8,9 +8,9 @@
 
 
 HME=$PWD
-SRCIMGS=${1:-$HME/source-images}
-DSTIMGS=${2:-$HME/converted-images}
-NEWIMGS=${3:-$HME/new-images}
+SRCIMGS=${2:-$HME/source-images}
+DSTIMGS=${3:-$HME/converted-images}
+NEWIMGS=${4:-$HME/new-images}
 
 
 log=logfile.txt
@@ -70,9 +70,16 @@ EOF
     exit
 fi
 
+if [[ $1 == '-r' || $1 == '--rerun' || $1 == 'rerun' ]]; then
+	rerun=true
+	echo "this is a rerun: $rerun"
+else
+	rerun=false
+fi
+
 pushd .
 # list of image extensions that we will try to convertbad
-IMTYPE="PNG png jpg"
+IMTYPE="PNG png jpg jpeg"
 
 echo "processing $IMTYPE images"
 
@@ -161,21 +168,25 @@ for TPE in $IMTYPE; do
 		fi
 		if [[ $res == '1280x720' ]]; then
 		    echo "converting 1280x720 resolution..."
-		    echo "Doing multiple conversion to reflect UI differences"
 		    convert $img -crop '195x195+840+150' ${DSTIMGS}/XX${nn1}
 		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn1} ${DSTIMGS}/${nn1}
 		    rm ${DSTIMGS}/XX${nn1}
-
-		    convert $img -crop '195x195+900+150' ${DSTIMGS}/XX${nn2}
-		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
-		    rm ${DSTIMGS}/XX${nn2}
 			
-		    convert $img -crop '195x195+899+123' ${DSTIMGS}/XX${nn3}
-		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn3} ${DSTIMGS}/${nn3}
-		    rm ${DSTIMGS}/XX${nn3}
-		    
+			if [[ $rerun ]]; then
+				echo "Doing multiple conversion to reflect UI differences"
+				convert $img -crop '195x195+900+150' ${DSTIMGS}/XX${nn2}
+				convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
+				rm ${DSTIMGS}/XX${nn2}
+			
+				convert $img -crop '195x195+899+123' ${DSTIMGS}/XX${nn3}
+				convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn3} ${DSTIMGS}/${nn3}
+				rm ${DSTIMGS}/XX${nn3}
+				
+				NWIMGS="$nn2 $nn3"
+		    fi
+			
 		    CNVTD='true'
-		    NWIMGS="$nn1 $nn2 $nn3"
+		    NWIMGS="$nn1" #$nn2 $nn3"
 		    echo "done"
 		fi
 		if [[ $res == '2224x1668' ]]; then
@@ -200,17 +211,21 @@ for TPE in $IMTYPE; do
 		fi
 		if [[ $res == '1920x1080' ]]; then
 		    echo "converting 1920x1080 resolution..."
-		    echo "Doing multiple conversion to reflect UI differences"
 		    convert $img -crop '271x271+1323+257' -scale '195x195' ${DSTIMGS}/XX${nn1} 
 		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn1} ${DSTIMGS}/${nn1}
 		    rm ${DSTIMGS}/XX${nn1}
 
-		    convert $img -crop '271x271+1239+257' -scale '195x195' ${DSTIMGS}/XX${nn2}
-		    convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
-		    rm ${DSTIMGS}/XX${nn2}
-
+			if [[ $rerun ]]; then
+				echo "Doing multiple conversion to reflect UI differences"
+				convert $img -crop '271x271+1239+257' -scale '195x195' ${DSTIMGS}/XX${nn2}
+				convert -extent 200x200 -gravity Center -background "#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
+				rm ${DSTIMGS}/XX${nn2}
+				
+				NWIMGS="$nn2"
+		    fi
+			
 		    CNVTD='true'
-		    NWIMGS="$nn1 $nn2"
+		    NWIMGS="$nn1" #$nn2"
 		    echo "done"
 		fi
 		if [[ $res == '1792x828' ]]; then
@@ -225,32 +240,40 @@ for TPE in $IMTYPE; do
 		fi
 		if [[ $res == '1334x750' ]]; then
 		    echo "converting 1334x750 resolution..."
-		    echo "Doing multiple conversion to reflect UI differences"
 		    convert $img -crop '244x275+937+94' -scale '200x200' ${DSTIMGS}/XX${nn1}
 		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn1} ${DSTIMGS}/${nn1}
 		    rm ${DSTIMGS}/XX${nn1}
 
-		    convert $img -crop '247x271+874+96' -scale '200x200' ${DSTIMGS}/XX${nn2}
-		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
-		    rm ${DSTIMGS}/XX${nn2}
+			if [[ $rerun ]]; then
+				echo "Doing multiple conversion to reflect UI differences"
+				convert $img -crop '247x271+874+96' -scale '200x200' ${DSTIMGS}/XX${nn2}
+				convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
+				rm ${DSTIMGS}/XX${nn2}
 
+				NWIMGS="$nn2"
+		    fi
+			
 		    CNVTD='true'
-		    NWIMGS="$nn1 $nn2"
+		    NWIMGS="$nn1" #$nn2"
 		    echo "done"
 		fi
 		if [[ $res == '1085x610' ]]; then
 		    echo "converting 1085x610 resolution..."			
-		    echo "Doing multiple conversion to reflect UI differences"
 		    convert $img -crop '170x170+760+125' -scale '195x195' ${DSTIMGS}/XX${nn1}
 		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn1} ${DSTIMGS}/${nn1}
 		    rm ${DSTIMGS}/XX${nn1}
 
-		    convert $img -crop '170x170+710+125' -scale '195x195' ${DSTIMGS}/XX${nn2}
-		    convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
-		    rm ${DSTIMGS}/XX${nn2}
+			if [[ $rerun ]]; then
+				echo "Doing multiple conversion to reflect UI differences"
+				convert $img -crop '170x170+710+125' -scale '195x195' ${DSTIMGS}/XX${nn2}
+				convert -size 200x200 -gravity Center -composite xc:"#f5f0d6" ${DSTIMGS}/XX${nn2} ${DSTIMGS}/${nn2}
+				rm ${DSTIMGS}/XX${nn2}
 
+				NWIMGS="$nn2"
+		    fi
+			
 		    CNVTD='true'
-		    NWIMGS="$nn1 $nn2"
+		    NWIMGS="$nn1" # $nn2"
 		    echo "done"
 		fi
 		if [[ $res == '873x609' ]]; then
@@ -323,6 +346,12 @@ echo "$0 script run done"
 
 #after stuff
 
-#move list of items to folder
+#move all good thumbs to a folder called converted-images/good
+#cd source-images
+#mkdir good
+#move items to sourceimages/good
 #ls ../converted-images/good/ | xargs mv -t good
+#save leftover filenames to file.txt
+#cat file.txt | xargs mv -t good
+
 
